@@ -1,6 +1,12 @@
 #+Title: AnnoLet! Web Annotation Tool
 #+AUTHOR: Raghav Mittal
 #+EMAIL:raghav.mittal@st.niituniversity.in
+#+PROPERTY: results output
+#+PROPERTY: exports code
+#+SETUPFILE: ../../../org-templates/level-1.org
+#+options: ^:nil
+#+LATEX: Literal LaTeX code for export
+
 
   - The source is written in JavaScript and jQuery 1.7 is used in it.
   - *Release 0*
@@ -11,13 +17,13 @@
 ** Use of =jQuery.noConflict()=
    To make the program more robust and avoid clash between variables with that of running website
    jQuery noConflict() is used and normal '$' selector is changed with '$j'.
-   #+NAME:noconflict
-   #+begin_src js :tangle yes
+
+   #+BEGIN_SRC js :tangle ../../code/annolet/annolet.js :eval no
      var $j = jQuery.noConflict();
    #+end_src
 --------------------------
 ** Calling annolet_main() function
-#+begin_src js :tangle yes :exports none
+   #+BEGIN_SRC js :tangle ../../code/annolet/annolet.js :eval no
    annolet_main();
 #+end_src
 
@@ -26,8 +32,8 @@
    When =annolet_createContainer= is called, it injects CSS stylesheet into =<head>= 
    element of website to stylize the container and =<div id=annolet-container>...</div>= 
    whose inner HTML is a list of options inside =body=.
-#+NAME:annolet_createContainer
-#+begin_src js :tangle yes
+
+#+BEGIN_SRC js :tangle ../../code/annolet/annolet.js :eval no
 var annolet_btn;
 // function to create annolet controls container
 function annolet_createContainer() {
@@ -69,8 +75,8 @@ function annolet_createContainer() {
    These functions are copied from [[https://code.google.com/p/fbug/source/browse/branches/firebug1.6/content/firebug/lib.js?spec=svn12950&r=8828#1332][Mozilla Firebug Opensource Code]]. Implemented  with small changes.
 *** Function =anno_getXpath(target)=
    It returns string containing Xpath of selected element which is passed as an argument called =target=.
-#+NAME:anno_getXpath
-#+begin_src js  :tangle yes
+
+#+BEGIN_SRC js :tangle ../../code/annolet/annolet.js :eval no
 // function to get Xpath to passed element
 function anno_getXpathTo(element) {
     if (element.id !== '') {
@@ -95,8 +101,8 @@ function anno_getXpathTo(element) {
 --------------------------------------   
 *** Function =anno_getElementByXpath(xpath)=
     This function returns that element as object whose Xpath is passed as an argument through it.
-#+NAME:anno_getElementByXpath
-#+begin_src js :tangle yes
+
+#+BEGIN_SRC js :tangle ../../code/annolet/annolet.js :eval no
 // function to evaluate element from Xpath
 function anno_getElementByXpath(xpath) {
     return document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
@@ -110,8 +116,8 @@ function anno_getElementByXpath(xpath) {
    function =annolet_getXpath= and returned Xpath is stored in variable =xpath=.
    =annolet_main()= function always check for the current value of =annolet_btn= whenever user clicks.
    On the bases of this value, preffered function =anno_highlight()= for 1 is called. More option will be added later.
-#+NAME:annolet_main()
-#+begin_src js :tangle yes
+
+#+BEGIN_SRC js :tangle ../../code/annolet/annolet.js :eval no
 //main function which will execute other functions
 function annolet_main() {
     disableAllLinks()  // it will disable all the links present in webpage iteratively
@@ -134,8 +140,8 @@ function annolet_main() {
 *** =disableAllLinks()=
 This function iterates through all the links (=<a>= tags) and disable them so 
 that user will not go out of webpage while annotating webpage.
-#+NAME: disableAllLinks
-#+begin_src js :tangle yes
+
+#+BEGIN_SRC js :tangle ../../code/annolet/annolet.js :eval no
 // funtion to disable all links
 function disableAllLinks(){
     var anchors = document.getElementsByTagName("a");
@@ -149,8 +155,8 @@ function disableAllLinks(){
     and array of xpaths with tagName and tagType(like language, point of view). Everytime user clicks element, this function will run, so
     as to assure that all the work done is saved for retreival in future. Xpath is passed through it as argument. Function tagObject is used
     to push tagging information to tags array.
-#+NAME: annolet_insertIntoObject
-#+begin_src js :tangle yes
+
+#+BEGIN_SRC js :tangle ../../code/annolet/annolet.js :eval no
 //function to store tags into JSON object.
 var annolet_obj = 0; //will save jason objects
 function annolet_insertIntoObject(xpath) {
@@ -171,8 +177,8 @@ function annolet_insertIntoObject(xpath) {
 ------------------------------
 *** =tagObject(xpath, obj)= 
     This function asks user for tagging information and push it to tags array of =annolet_obj=.
-#+NAME: tagObject
-#+begin_src js :tangle yes
+
+#+BEGIN_SRC js :tangle ../../code/annolet/annolet.js :eval no
 function tagObject(xpath, obj){
   tagName = prompt('tagName:');
   tagInfo = prompt('tagInfo');
@@ -191,8 +197,8 @@ function tagObject(xpath, obj){
     of jQuery it is wrapped inside =<span>= with id 'mark' and yellow background. Another function that is 
     =annolet_insertIntoObject()= creates an object and push it to object array.So it can be saved for future to a 
     server. It also prevents annolet container from highlighting itself.
-#+NAME: anno_highlight
-#+begin_src js :tangle yes
+
+#+BEGIN_SRC js :tangle ../../code/annolet/annolet.js :eval no
 //function for highlighting element
 function anno_highlight(xpath) {
     clicked_element = anno_getElementByXpath(xpath)
@@ -229,8 +235,12 @@ if (anno_getElementByXpath(xpath).id != "mark" || !(anno_getElementByXpath(xpath
 #+end_src
 ------
 *** =get_phonetics=
-#+name: get phonetics
-#+begin_src js :tangle yes
+
++ This makes a request to the webservices and gets the phonetic translation of
+the string that is passed to it.
++ Make sure that the webservice is running if on the local host
+
+#+BEGIN_SRC js :tangle ../../code/annolet/annolet.js :eval no
 var phonetic_trans = "default_value";
 var language_trans = "default_value";
 
@@ -258,8 +268,13 @@ function get_phonetics(str){
 #+end_src
 
 *** =get_languagetrans()=
-#+name: get_languages
-#+begin_src js :tangle yes
+
++ This makes a request to the webservices and gets the language translation of
+the string that is passed to it.
++ Make sure that the webservice is running if on the local host
+
+
+#+BEGIN_SRC js :tangle ../../code/annolet/annolet.js :eval no
 function get_languagetrans(str,fr,to){
 
   var xhr = new XMLHttpRequest();
@@ -283,8 +298,8 @@ function get_languagetrans(str,fr,to){
 #+end_src
 
 *** =anno_phonetic()=
-#+name: phonetic_translation
-#+begin_src js :tangle yes
+
+#+BEGIN_SRC js :tangle ../../code/annolet/annolet.js :eval no
 //function for getting phonetic
 function anno_phonetic(xpath) {
   clicked_element = anno_getElementByXpath(xpath);
@@ -323,8 +338,8 @@ function anno_phonetic(xpath) {
 #+end_src
 
 *** =anno_language()=
-#+name: language_translation
-#+begin_src js :tangle yes
+
+#+BEGIN_SRC js :tangle ../../code/annolet/annolet.js :eval no
 //function for getting phonetic
 function anno_language(xpath) {
   clicked_element = anno_getElementByXpath(xpath);
